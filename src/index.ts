@@ -75,11 +75,38 @@ const showStats = () => {
     console.log(`Taxa de conclusão: ${total > 0 ? ((completed / total) * 100).toFixed(1) : 0}%`);
 }
 
+const deleteTask = (id: string) => {
+    const index = tasks.findIndex(task => task.id === id);
+    if (index === -1) {
+        console.log(`[ERROR] Tarefa com ID ${id} não encontrada.`);
+        return;
+    }
+
+    const [deletedTask] = tasks.splice(index, 1);
+    console.log(`[NOTIFICATION] Tarefa deletada: ${deletedTask?.title}`);
+    console.log(`[LOG] Task ${deletedTask?.id} removida do sistema`);
+}
+
+const updateTaskPriority = (id: string, newPriority: 'low' | 'medium' | 'high') => {
+    const index = tasks.findIndex(task => task.id === id);
+    if (!index) {
+        console.log(`[ERROR] Tarefa com ID ${id} não encontrada.`);
+        return;
+    }
+    if (tasks[index]) {
+        tasks[index].priority = newPriority;
+        console.log(`[NOTIFICATION] Prioridade da tarefa ${tasks[index].title} atualizada para ${newPriority}`);
+        console.log(`[LOG] Task ${tasks[index].id} prioridade alterada para ${newPriority}`);
+    }
+}
+
 console.log('=== TASKMASTER v1.0 (Versão Ruim) ===\n');
 addTask('Estudar Design Patterns', 'Aprender Singleton, Factory, etc', 'high');
 addTask('Fazer compras', 'Comprar ingredientes para jantar', 'medium');
 addTask('Treinar', 'Academia às 18h', 'low');
 
+deleteTask('task-2')
+updateTaskPriority('task-2', 'high')
 listTasks('priority');
 completeTask('task-1');
 showStats();
