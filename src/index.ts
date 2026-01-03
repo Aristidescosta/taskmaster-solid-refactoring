@@ -1,44 +1,32 @@
-type TTask = {
-    id: string;
-    title: string;
-    description: string;
-    status: 'pending' | 'in_progress' | 'completed';
-    priority: 'low' | 'medium' | 'high';
-    createdAt: Date;
-    completedAt?: Date;
-}
+import { TaskRepository } from "./TaskRepository.js";
 
-let tasks: TTask[] = [];
-let taskIdCounter: number = 1;
+const repo = TaskRepository.getInstance();
 
 const addTask = (title: string, description: string, priority: 'low' | 'medium' | 'high') => {
-    const task: TTask = {
-        id: `task-${taskIdCounter++}`,
-        title,
-        description,
-        status: 'pending',
-        priority,
-        createdAt: new Date()
-    };
+    const task = repo.addTask({ title, description, status: 'pending', priority })
 
-    tasks.push(task);
     console.log(`[NOTIFICATION] Nova tarefa criada: ${title}`);
     console.log(`[LOG] Task ${task.id} adicionada ao sistema`);
+    return task;
 }
 
 const completeTask = (id: string) => {
-    const task = tasks.find(t => t.id === id);
+    const task = repo.updateTask(id, {
+        status: 'completed',
+        completedAt: new Date()
+    })
+
     if (!task) {
-        console.log('Task não encontrada');
+        console.log('[ERROR] Tarefa com ID ${id} não encontrada.');
         return;
     }
-    task.status = 'completed';
-    task.completedAt = new Date();
-    console.log(`[NOTIFICATION] Tarefa completada: ${task.title}`);
-    console.log(`[LOG] Task ${task.id} marcada como completa`);
+    console.log(`[NOTIFICATION] Tarefa concluída: ${task.title}`);
+    console.log(`[LOG] Task ${task.id} marcada como concluída`);
 }
 
 const listTasks = (sortBy: 'date' | 'priority' | 'status') => {
+    let tasks = repo.getAllTasks();
+
     let sorted = [...tasks];
 
     if (sortBy === 'date') {
@@ -63,50 +51,45 @@ const listTasks = (sortBy: 'date' | 'priority' | 'status') => {
 }
 
 const showStats = () => {
-    const total = tasks.length;
-    const completed = tasks.filter(task => task.status === 'completed').length;
-    const pending = tasks.filter(task => task.status === 'pending').length;
-    const inProgress = tasks.filter(task => task.status === 'in_progress').length;
+    const stats = repo.getStats();
     console.log('\n=== ESTATÍSTICAS ===');
-    console.log(`Total: ${total}`);
-    console.log(`Completadas: ${completed}`);
-    console.log(`Pendentes: ${pending}`);
-    console.log(`Em Progresso: ${inProgress}`);
-    console.log(`Taxa de conclusão: ${total > 0 ? ((completed / total) * 100).toFixed(1) : 0}%`);
+    console.log(`Total: ${stats.total}`);
+    console.log(`Completadas: ${stats.completed}`);
+    console.log(`Pendentes: ${stats.pending}`);
+    console.log(`Em Progresso: ${stats.inProgress}`);
+    console.log(`Taxa de conclusão: ${stats.total > 0 ? ((stats.completed / stats.total) * 100).toFixed(1) : 0}%`);
 }
 
 const deleteTask = (id: string) => {
-    const index = tasks.findIndex(task => task.id === id);
-    if (index === -1) {
-        console.log(`[ERROR] Tarefa com ID ${id} não encontrada.`);
+    const hasDeleted = repo.deleteTask(id);
+    if (!hasDeleted) {
+        console.log(`[ERROR] Tarefa com ID ${id} não encontrada, ou houve um erro interno.`);
         return;
     }
-
-    const [deletedTask] = tasks.splice(index, 1);
-    console.log(`[NOTIFICATION] Tarefa deletada: ${deletedTask?.title}`);
-    console.log(`[LOG] Task ${deletedTask?.id} removida do sistema`);
+    console.log(`[NOTIFICATION] Tarefa deletada com sucesso`);
+    console.log(`[LOG] Task ${id} removida do sistema`);
 }
 
 const updateTaskPriority = (id: string, newPriority: 'low' | 'medium' | 'high') => {
-    const index = tasks.findIndex(task => task.id === id);
-    if (!index) {
+    const task = repo.updateTask(id, {
+        priority: newPriority
+    })
+    if (!task) {
         console.log(`[ERROR] Tarefa com ID ${id} não encontrada.`);
         return;
     }
-    if (tasks[index]) {
-        tasks[index].priority = newPriority;
-        console.log(`[NOTIFICATION] Prioridade da tarefa ${tasks[index].title} atualizada para ${newPriority}`);
-        console.log(`[LOG] Task ${tasks[index].id} prioridade alterada para ${newPriority}`);
-    }
+    console.log(`[NOTIFICATION] Prioridade da tarefa alterada para: ${newPriority}`);
+    console.log(`[LOG] Task ${id} prioridade alterada para ${newPriority}`);
 }
 
-console.log('=== TASKMASTER v1.0 (Versão Ruim) ===\n');
+console.log('=== TASKMASTER v1.0 (Versão Refatorada) ===\n');
 addTask('Estudar Design Patterns', 'Aprender Singleton, Factory, etc', 'high');
 addTask('Fazer compras', 'Comprar ingredientes para jantar', 'medium');
 addTask('Treinar', 'Academia às 18h', 'low');
 
-deleteTask('task-2')
-updateTaskPriority('task-2', 'high')
+//deleteTask('task-2')
+updateTaskPriority('task-3', 'medium')
+updateTaskPriority('task-1', 'low')
 listTasks('priority');
 completeTask('task-1');
 showStats();
