@@ -14,9 +14,184 @@ Este projeto foi criado para:
 
 ## Status do Projeto
 
-**Versão atual:** 1.0.0 (Versão com problemas de design)
+> **Branch atual:** `main`
+>
+> **Versão:** 1.0 (Código procedural com problemas)
 
-Esta é a versão inicial deliberadamente implementada com más práticas para servir como base de estudo. Veja [PROBLEMAS.md](PROBLEMAS.md) para análise detalhada dos problemas identificados.
+⚠️ **Esta é a versão inicial deliberadamente implementada com más práticas para servir como base de estudo.**
+
+Veja [PROBLEMAS.md](PROBLEMAS.md) para análise detalhada dos problemas identificados.
+
+---
+
+## 🔀 Branches Disponíveis - Evolução do Projeto
+
+Este projeto está organizado em branches que demonstram a evolução progressiva do código:
+
+### 📍 `main` (v1.0) ← **VOCÊ ESTÁ AQUI**
+**Status:** ✅ Completo
+
+**Características:**
+- Código procedural com problemas intencionais
+- Estado global exposto
+- Funções fazendo múltiplas coisas (viola SRP)
+- Console.log hardcoded
+- Sem abstrações ou interfaces
+- Bug conhecido na validação
+
+**Propósito educacional:** Demonstrar problemas comuns em código procedural
+
+```bash
+# Você já está nesta branch
+git branch
+```
+
+---
+
+### 📍 `feat-refactor-solid-v1` (v2.0)
+**Status:** ✅ Completo | **Último commit:** `ed07b34`
+
+**O que foi implementado:**
+
+#### 🏗️ Arquitetura
+- ✅ **Singleton Pattern** - TaskRepository com instância única
+  ```typescript
+  class TaskRepository {
+      private static instance: TaskRepository;
+      private constructor() { }
+      static getInstance(): TaskRepository { ... }
+  }
+  ```
+- ✅ **Repository Pattern** (básico) - Encapsulamento do acesso a dados
+- ✅ **Estado encapsulado** - Arrays e counters agora são `private`
+- ✅ **Modularização** - Código separado em 3 arquivos:
+  - `task.ts` - Type definitions
+  - `TaskRepository.ts` - Repository com Singleton
+  - `index.ts` - Entry point e funções de alto nível
+
+#### 📚 Documentação Completa
+- ✅ **Pasta `docs/`** criada com 5 documentos:
+  - `INDEX.md` - Índice central de navegação
+  - `SINGLETON-PATTERN.md` - Detalhes do Singleton (7.8KB)
+  - `PROBLEMAS.md` - Análise v1.0 → v2.0 → v3.0 (13KB)
+  - `ESTRUTURA-ATUAL.md` - Estado atual do projeto (11KB)
+  - `README-V1.md` - Documentação da versão original (9KB)
+
+#### 🛠️ Melhorias Técnicas
+- ✅ **`.gitignore`** adicionado (node_modules, dist, logs, etc)
+- ✅ **tsx** substituiu ts-node (melhor suporte ESM)
+- ✅ **ESM modules** com `"type": "module"`
+
+#### ⚠️ Problemas ainda presentes
+- Funções fazendo múltiplas coisas (viola SRP)
+- Console.log hardcoded nas funções
+- Lógica + apresentação acopladas em `listTasks()`
+- Sem interfaces/abstrações (ITaskRepository)
+- Difícil de testar (Singleton compartilha estado)
+
+**Como acessar:**
+```bash
+git checkout feat-refactor-solid-v1
+
+# Ver documentação
+ls docs/  # 5 arquivos .md
+
+# Executar
+pnpm dev
+```
+
+**Documentação disponível:**
+- 📖 `docs/INDEX.md` - Índice completo organizado por branch
+- 🎯 `docs/SINGLETON-PATTERN.md` - Como funciona, vantagens/desvantagens
+- 📊 `docs/PROBLEMAS.md` - Evolução completa (o que foi resolvido, o que falta)
+- 📂 `docs/ESTRUTURA-ATUAL.md` - Arquivos e comparação v1.0 vs v2.0
+- 📜 `docs/README-V1.md` - Documentação da versão original
+
+---
+
+### 📍 `feat-solid-complete` (v3.0)
+**Status:** 📋 Planejado
+
+**Refatorações planejadas:**
+- 📋 **Dependency Injection** completo
+- 📋 **Observer Pattern** para sistema de notificações
+- 📋 **Strategy Pattern** para algoritmos de ordenação
+- 📋 **Factory Pattern** para criação de objetos
+- 📋 Separação completa de responsabilidades (SRP)
+- 📋 Interfaces e abstrações (ITaskRepository, INotificationService, etc)
+- 📋 100% testável com testes unitários e de integração
+
+**Arquitetura planejada:**
+```
+src/v3-solid/
+├── domain/           # Entidades e lógica de negócio
+├── repositories/     # Abstração de persistência
+├── services/         # Lógica de aplicação
+├── strategies/       # Algoritmos intercambiáveis
+├── observers/        # Sistema de eventos
+└── presentation/     # Formatação e UI
+```
+
+**Como acompanhar:**
+```bash
+# Branch será criada em breve
+git checkout feat-solid-complete
+```
+
+---
+
+## 📊 Comparação Detalhada Entre Versões
+
+| Aspecto | v1.0 (main) | v2.0 (feat-refactor) | v3.0 (planejado) |
+|---------|-------------|----------------------|------------------|
+| **Arquivos** | 1 arquivo (index.ts) | 3 arquivos + docs/ | Estrutura em camadas |
+| **Estado Global** | ❌ `let tasks = []` (exposto) | ✅ `private tasks` (encapsulado) | ✅ Encapsulado com DI |
+| **Acesso aos Dados** | ❌ Direto ao array | ✅ Via TaskRepository | ✅ Via ITaskRepository |
+| **Instâncias** | ❌ Variáveis globais | ✅ Singleton (única instância) | ✅ DI (múltiplas instâncias) |
+| **Documentação** | 1 arquivo (PROBLEMAS.md) | 📚 5 arquivos em docs/ | 📚 Completa por camada |
+| **SRP** | ❌ Funções fazem 3+ coisas | ❌ Ainda violado | ✅ Cada classe 1 responsabilidade |
+| **Notificações** | ❌ `console.log` hardcoded | ❌ `console.log` hardcoded | ✅ Observer Pattern |
+| **Ordenação** | ❌ Acoplada ao console | ❌ Acoplada ao console | ✅ Strategy Pattern |
+| **Criação de Tasks** | ❌ Object literal | ⚠️ Repository.addTask() | ✅ Factory Pattern |
+| **Testabilidade** | ❌ Impossível isolar | ⚠️ Difícil (Singleton global) | ✅ Fácil (DI + mocks) |
+| **Design Patterns** | ❌ 0 patterns | ✅ 2 (Singleton, Repository) | ✅ 5+ (Observer, Strategy, Factory, etc) |
+| **SOLID Score** | ❌ 0/5 princípios | ⚠️ 1/5 (parcial OCP) | ✅ 5/5 completo |
+| **Linhas de Código** | ~120 linhas (1 arquivo) | ~180 linhas + 50KB docs | ~400 linhas (organizado) |
+
+---
+
+## 🎓 Como Estudar Este Projeto
+
+### Opção 1: Seguir a Evolução
+```bash
+# 1. Comece aqui (main) - veja os problemas
+git checkout main
+# Leia: PROBLEMAS.md, execute: pnpm dev
+
+# 2. Veja a primeira refatoração (Singleton)
+git checkout feat-refactor-solid-v1
+# Leia: docs/SINGLETON-PATTERN.md
+
+# 3. (Futuro) Veja a versão completa
+git checkout feat-solid-complete
+# Leia: docs/ (quando implementado)
+```
+
+### Opção 2: Comparar Diretamente
+```bash
+# Ver diferenças entre v1.0 e v2.0
+git diff main feat-refactor-solid-v1 -- src/
+
+# Ver apenas arquivos modificados
+git diff --name-status main feat-refactor-solid-v1
+```
+
+### Opção 3: Experimentar
+```bash
+# Criar sua própria branch de refatoração
+git checkout -b minha-refatoracao main
+# Tente resolver os problemas você mesmo!
+```
 
 ## Estrutura do Projeto
 
