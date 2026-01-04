@@ -45,7 +45,6 @@ export class TaskRepository {
         return true;
     }
 
-
     getAllTasks(): TTask[] {
         return [...this.tasks];
     }
