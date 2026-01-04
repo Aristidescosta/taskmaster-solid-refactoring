@@ -14,17 +14,31 @@ Este projeto foi criado para:
 
 ## Status do Projeto
 
-**Versão atual:** 1.0.0 (Versão com problemas de design)
+> **Branch atual:** `feat-refactor-solid-v1`
+>
+> **Versão:** 2.0 (Singleton Pattern aplicado)
 
-Esta é a versão inicial deliberadamente implementada com más práticas para servir como base de estudo. Veja [PROBLEMAS.md](PROBLEMAS.md) para análise detalhada dos problemas identificados.
+O projeto evoluiu de uma implementação procedural com problemas para uma versão refatorada aplicando boas práticas.
+
+### Organização por Branch
+- **`main`** (v1.0) - Código procedural original com problemas → [docs/README-V1.md](docs/README-V1.md)
+- **`feat-refactor-solid-v1`** (v2.0) - Singleton Pattern aplicado ← **VOCÊ ESTÁ AQUI**
+- **`feat-solid-complete`** (v3.0) - SOLID completo (planejado)
+
+📚 **[Índice completo da documentação](docs/INDEX.md)** - Navegue por todas as versões
 
 ## Estrutura do Projeto
 
 ```
 taskmaster/
+├── docs/                  # Documentação
+│   ├── PROBLEMAS.md      # Análise dos problemas identificados
+│   └── ESTRUTURA.md      # Guia de estrutura de pastas recomendada
 ├── src/
-│   └── index.ts          # Implementação atual (versão com problemas)
-├── PROBLEMAS.md          # Análise detalhada dos problemas de design
+│   ├── index.ts          # Entry point da aplicação
+│   ├── TaskRepository.ts # Repository com Singleton Pattern
+│   └── task.ts           # Type definitions
+├── .gitignore
 ├── package.json
 ├── tsconfig.json
 └── README.md
@@ -59,8 +73,7 @@ type TTask = {
 
 - **TypeScript** 5.9.3
 - **Node.js** (runtime)
-- **ts-node** (execução TypeScript)
-- **nodemon** (desenvolvimento com hot reload)
+- **tsx** (execução TypeScript com suporte ESM)
 - **pnpm** (gerenciador de pacotes)
 
 ## Instalação
@@ -102,24 +115,36 @@ pnpm start
 
 ### Execução Atual
 
-O arquivo [src/index.ts](src/index.ts) contém um exemplo de uso no final:
+O arquivo [src/index.ts](src/index.ts) demonstra o uso do TaskRepository com Singleton Pattern:
 
 ```typescript
-console.log('=== TASKMASTER v1.0 (Versão Ruim) ===\n');
+import { TaskRepository } from "./TaskRepository.js";
+
+const repo = TaskRepository.getInstance();
+
+// Todas as funções agora usam o repositório
 addTask('Estudar Design Patterns', 'Aprender Singleton, Factory, etc', 'high');
 addTask('Fazer compras', 'Comprar ingredientes para jantar', 'medium');
 addTask('Treinar', 'Academia às 18h', 'low');
 
-deleteTask('task-2')
-updateTaskPriority('task-2', 'high')
-listTasks('priority');
-completeTask('task-1');
-showStats();
+// Demonstração do Singleton
+const repo1 = TaskRepository.getInstance();
+const repo2 = TaskRepository.getInstance();
+console.log('São iguais?', repo1 === repo2); // true
 ```
 
-## Problemas Identificados
+## Evoluções Implementadas
 
-Esta versão possui intencionalmente os seguintes problemas de design:
+### Design Patterns Aplicados
+
+1. **Singleton Pattern** - [TaskRepository.ts](src/TaskRepository.ts)
+   - Garante uma única instância do repositório
+   - Controle centralizado de acesso aos dados
+   - Estado compartilhado consistente
+
+### Problemas Originais (Versão 1.0)
+
+A primeira versão tinha os seguintes problemas:
 
 1. **Funções fazendo múltiplas responsabilidades** - Violação do SRP
 2. **Estado global** - Arrays globais impedem isolamento
@@ -128,20 +153,22 @@ Esta versão possui intencionalmente os seguintes problemas de design:
 5. **Difícil de testar** - Testes acoplados e frágeis
 6. **Bug na validação** - `updateTaskPriority` falha no index 0
 
-Veja análise completa em [PROBLEMAS.md](PROBLEMAS.md).
+Veja análise completa em [docs/PROBLEMAS.md](docs/PROBLEMAS.md).
 
 ## Roadmap
 
-### Fase 1: Identificação (Atual)
+### Fase 1: Identificação ✅
 - [x] Implementação básica com problemas
 - [x] Documentação dos problemas
+- [x] Estrutura de documentação organizada
 
-### Fase 2: Refatoração
-- [ ] Aplicar Single Responsibility Principle
+### Fase 2: Refatoração (Em Andamento)
+- [x] Singleton Pattern aplicado
+- [x] Repository Pattern (básico)
+- [ ] Aplicar Single Responsibility Principle completo
 - [ ] Implementar Dependency Injection
 - [ ] Criar abstrações e interfaces
-- [ ] Aplicar Design Patterns:
-  - Repository Pattern
+- [ ] Aplicar Design Patterns adicionais:
   - Observer Pattern
   - Strategy Pattern
   - Factory Pattern
@@ -193,8 +220,17 @@ ISC
 
 ## Recursos Adicionais
 
-### Documentação
-- [PROBLEMAS.md](PROBLEMAS.md) - Análise detalhada dos problemas
+### 📚 Documentação Completa
+**Navegue por:** [docs/INDEX.md](docs/INDEX.md) - Índice completo organizado por branch
+
+### Por Versão
+- [docs/README-V1.md](docs/README-V1.md) - v1.0 (código com problemas - branch `main`)
+- [docs/SINGLETON-PATTERN.md](docs/SINGLETON-PATTERN.md) - v2.0 (Singleton Pattern - branch atual)
+- [docs/ESTRUTURA.md](docs/ESTRUTURA.md) - v3.0 (estrutura planejada)
+
+### Análise e Problemas
+- [docs/PROBLEMAS.md](docs/PROBLEMAS.md) - Análise completa de problemas e evoluções (v1.0 → v2.0 → v3.0)
+- [docs/ESTRUTURA-ATUAL.md](docs/ESTRUTURA-ATUAL.md) - Estado atual do projeto (v2.0)
 
 ### Princípios SOLID
 - **S**ingle Responsibility Principle
